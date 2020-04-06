@@ -1,0 +1,29 @@
+{
+  "name": "cli-commander",
+  "version": "0.0.25",
+  "description": "Module to declare and run commands",
+  "main": "commander.js",
+  "scripts": {
+    "start": "node commander.js"
+  },
+  "bin": "./bin/cli-commander",
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "engines": {
+    "node": ">=4.2.0"
+  },
+  "author": "Starfolll",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^13.11.0",
+    "@types/readline-sync": "^1.4.3"
+  },
+  "dependencies": {
+    "chalk": "^4.0.0",
+    "readline-sync": "^1.4.10",
+    "tsc": "^1.20150623.0",
+    "typescript": "^3.8.3"
+  }
+}
