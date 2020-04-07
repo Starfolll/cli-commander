@@ -1,42 +1,47 @@
+import readlineSync from "readline-sync";
 import chalk from "chalk";
-import Cmd, {cmd} from "./cmd";
+import {spawn, spawnSync} from "child_process";
 
 
 export type command = {
-   readonly name: string;
-   readonly actionDescription?: string;
-   readonly cmd: Array<cmd>;
-   readonly deep?: number;
-   readonly printGap?: boolean;
+   readonly cmd: string;
+   readonly cmdParams?: string;
+   readonly cmdConfigurableValues?: Array<string>;
+   readonly ignoreLogs?: boolean;
 }
 
-export default class Command {
-   public readonly name: string;
-   public readonly actionDescription: string;
-
-   private readonly cmd: Array<Cmd>;
-
-   private readonly deep: number;
-   private readonly printGap: boolean;
+export default class Cmd {
+   private readonly cmd: string;
+   private readonly cmdParams: string;
+   private readonly cmdConfigurableValues: Array<string>;
+   private readonly ignoreLogs: boolean;
 
 
-   constructor(command: command) {
-      this.name = command.name;
-      this.actionDescription = command.actionDescription ?? "";
-
-      this.cmd = command.cmd.map(c => new Cmd(c));
-
-      this.deep = command.deep ?? 1;
-      this.printGap = command.printGap ?? false;
+   constructor(cmd: command) {
+      this.cmd = cmd.cmd;
+      this.cmdParams = cmd.cmdParams ?? "";
+      this.cmdConfigurableValues = cmd.cmdConfigurableValues ?? [];
+      this.ignoreLogs = !!cmd.ignoreLogs;
    }
 
-   public Show(): void {
-      console.log(` ${"I".repeat(this.deep - 1)} ${(chalk.greenBright(this.name)).padEnd(60 - this.deep * 2)} ${!!this.actionDescription ? " | " : ""} ${chalk(this.actionDescription)}`);
-      if (this.printGap) console.log();
-   }
 
-   public Execute(): void {
-      for (let i = 0; i < this.cmd.length; i++)
-         this.cmd[i].Spawn();
+   Spawn() {
+      let params = this.cmdParams.split(" ");
+
+      for (const confName of this.cmdConfigurableValues) {
+         const replacer = (readlineSync.question(`> Input ${chalk.blueBright(confName)} > `)).split(" ").join("_");
+
+         params = params.map(i => confName === i ? replacer : i);
+      }
+
+      console.log(`> ${this.cmd} ${[...params].join(" ")}`);
+      console.log();
+
+      if (!this.ignoreLogs) spawnSync(this.cmd, [...params], {
+         stdio: this.ignoreLogs ? "ignore" : "inherit"
+      });
+      else spawn(this.cmd, [...params], {
+         stdio: this.ignoreLogs ? "ignore" : "inherit"
+      });
    }
 }
