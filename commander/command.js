@@ -7,15 +7,15 @@ const readline_sync_1 = __importDefault(require("readline-sync"));
 const chalk_1 = __importDefault(require("chalk"));
 const child_process_1 = require("child_process");
 class Command {
-    constructor(cmd) {
+    constructor(command) {
         var _a, _b;
-        this.cmd = cmd.cmd;
-        this.cmdParams = (_a = cmd.cmdParams, (_a !== null && _a !== void 0 ? _a : []));
-        this.cmdConfigurableValues = (_b = cmd.cmdConfigurableValues, (_b !== null && _b !== void 0 ? _b : []));
-        this.ignoreLogs = !!cmd.ignoreLogs;
+        this.cmd = command.cmd;
+        this.cmdParams = (_a = command.cmdParams, (_a !== null && _a !== void 0 ? _a : ""));
+        this.cmdConfigurableValues = (_b = command.cmdConfigurableValues, (_b !== null && _b !== void 0 ? _b : []));
+        this.ignoreLogs = !!command.ignoreLogs;
     }
     Spawn() {
-        let params = [...this.cmdParams];
+        let params = this.cmdParams.split(" ");
         for (const confName of this.cmdConfigurableValues) {
             const replacer = (readline_sync_1.default.question(`> Input ${chalk_1.default.blueBright(confName)} > `)).split(" ").join("_");
             params = params.map(i => confName === i ? replacer : i);
@@ -30,6 +30,14 @@ class Command {
             child_process_1.spawn(this.cmd, [...params], {
                 stdio: this.ignoreLogs ? "ignore" : "inherit"
             });
+    }
+    GetDataToSave() {
+        return {
+            cmd: this.cmd,
+            cmdConfigurableValues: this.cmdConfigurableValues.length > 1 ? this.cmdConfigurableValues : undefined,
+            cmdParams: this.cmdParams,
+            ignoreLogs: this.ignoreLogs
+        };
     }
 }
 exports.default = Command;

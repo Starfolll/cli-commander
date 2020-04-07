@@ -1,15 +1,16 @@
-import Command, {commandGroup} from "./commandGroup";
+import CommandsGroup, {commandsGroup} from "./commandsGroup";
 import readlineSync from "readline-sync";
 import {execSync} from "child_process";
 import chalk from "chalk";
 import {isReplyPositive, saveCommandsFile} from "../commander";
+import {command} from "./command";
 
 
 export type commandsSections = {
    name: string;
    deep?: number;
    sections?: { [name: string]: commandsSections };
-   commands?: { [name: string]: commandGroup };
+   commands?: { [name: string]: commandsGroup };
    header?: string;
    currentDirPath?: string;
    startCommand?: Function;
@@ -21,7 +22,7 @@ export default class CommandsSections {
    public readonly deep: number;
 
    public readonly sections: { [name: string]: CommandsSections };
-   public readonly commands: { [name: string]: Command };
+   public readonly commands: { [name: string]: CommandsGroup };
 
    public readonly header?: string;
    public readonly currentDirPath: string;
@@ -51,7 +52,7 @@ export default class CommandsSections {
 
       this.commands = {};
       if (!!commandsSections.commands) for (const command in commandsSections.commands)
-         this.commands[command] = new Command(({
+         this.commands[command] = new CommandsGroup(({
             ...commandsSections.commands[command],
             deep: this.deep + 1
          }));
@@ -65,9 +66,64 @@ export default class CommandsSections {
       console.log(` ${"I".repeat(this.deep)} ${chalk.blueBright(this.name)}`);
    }
 
+   public ShowDefaultCommands(): void {
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
+         name: "c",
+         actionDescription: "clear"
+      });
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
+         name: "q",
+         actionDescription: "quit section / app"
+      });
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
+         name: "--",
+         actionDescription: "run console command"
+      });
+      console.log();
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
+         name: "cli-cs",
+         actionDescription: "create commands section"
+      });
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
+         name: "cli-ds",
+         actionDescription: "delete commands section"
+      });
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
+         name: "cli-cc",
+         actionDescription: "create command in current section"
+      });
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
+         name: "cli-dc",
+         actionDescription: "delete command in current section"
+      });
+   }
+
+
    public Show(): void {
       console.log();
+      console.log(this.header);
+
+      console.log();
+      if (!!this.currentDirPath) {
+         console.log(` dir : ${this.currentDirPath}`);
+         if (!!this.startCommand) console.log();
+      }
+      if (!!this.startCommand) this.startCommand();
+
+      console.log();
       this.ShowTitle();
+
+      if (this.deep === 1) {
+         console.log();
+         this.ShowDefaultCommands();
+      }
 
       if (Object.keys(this.sections).length > 0) console.log();
       Object.keys(this.sections).forEach(s => this.sections[s].ShowSectionTitle());
@@ -80,7 +136,7 @@ export default class CommandsSections {
 
    public SpawnCommand(commandName: string): void {
       const command = this.commands[commandName];
-      if (!command) return console.error(" | No such command");
+      if (!command) return console.error(" No such command");
       else command.Execute();
    }
 
@@ -142,16 +198,58 @@ export default class CommandsSections {
       return false;
    }
 
-
-   private CheckForCommandName(): boolean {
-      return true;
-   }
-
    private CreateCommand(): boolean {
-      return false;
+      const newCommandName = readlineSync.question(" New command name : ");
+      const commandExists = !!this.sections[newCommandName];
+
+      if (commandExists) {
+         console.log(" Can not create command (name is reserved) \n");
+         return false;
+      } else {
+         const commandDescription = readlineSync.question(" CommandDescription : ");
+         let commandsCount: undefined | number | string = readlineSync.question(" Commands count (default - 1) : ");
+         if (+commandsCount > 0) commandsCount = +commandsCount;
+         else commandsCount = 1;
+
+         const commands: Array<command> = [];
+         for (let i = 0; i < commandsCount; i++) {
+            console.log(` Command ${i + 1} : \n`);
+            const cmd = readlineSync.question(" Command name (for example 'git' not 'git commit') : ");
+            const cmdParams = readlineSync.question(" Command params (for example 'commit') : ");
+            const cmdConfigurableValues = readlineSync.question(" Command configurable values : ").split(" ");
+            const ignoreLogs = isReplyPositive(readlineSync.question(" Ignore logs [yes/no] : "));
+
+            commands.push({
+               cmd,
+               cmdParams: !!cmdParams ? cmdParams : undefined,
+               cmdConfigurableValues: cmdConfigurableValues.some(s => !!s) ? cmdConfigurableValues : undefined,
+               ignoreLogs: ignoreLogs ? ignoreLogs : undefined
+            });
+         }
+
+         this.commands["-" + newCommandName] = new CommandsGroup({
+            name: newCommandName,
+            actionDescription: commandDescription ?? undefined,
+            cmd: commands,
+            deep: this.deep + 1
+         });
+         this.saveFunction!();
+         return true;
+      }
    }
 
    private DeleteCommand(): boolean {
+      const commandToDelete = readlineSync.question(" Command to delete : ");
+      const commandExists = !!this.sections[commandToDelete];
+
+      if (!commandExists) {
+         console.log(` No command with name ${commandToDelete} \n`);
+         return false;
+      } else if (isReplyPositive(readlineSync.question(` Are you sure you want to delete ${commandToDelete} command? \n [yes/no] : `))) {
+         delete this.commands[commandToDelete];
+         this.saveFunction!();
+         return true;
+      }
       return false;
    }
 
@@ -159,18 +257,12 @@ export default class CommandsSections {
    public Enter(onSectionQuit: any): void {
       const displaySection = () => {
          console.clear();
-         console.log();
-         if (!!this.currentDirPath) {
-            console.log(` dir : ${this.currentDirPath}`);
-            if (!!this.startCommand) console.log();
-         }
-         if (!!this.startCommand) this.startCommand();
          this.Show();
       };
 
       displaySection();
       while (true) {
-         const input = readlineSync.question(chalk.magenta(` ${"=".repeat(this.deep + 1)}> `));
+         const input = readlineSync.question(chalk.magenta(` ${"=".repeat(this.deep)}> `));
          if (!input) continue;
 
          if (input === "q") {
@@ -207,12 +299,17 @@ export default class CommandsSections {
       const sectionsData: { [sectionName: string]: commandsSections } = {};
       sectionsName.forEach(sN => sectionsData[sN] = this.sections[sN].GetDataToSave());
 
+      const commandsName = Object.keys(this.commands);
+      const commandsData: { [sectionName: string]: commandsGroup } = {};
+      commandsName.forEach(sN => commandsData[sN] = this.commands[sN].GetDataToSave());
+
+
       return {
          name: this.name,
          header: this.header,
          currentDirPath: this.deep === 1 ? this.currentDirPath : undefined,
          sections: sectionsData,
-         commands: {},
+         commands: commandsData,
       }
    }
 }

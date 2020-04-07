@@ -10,18 +10,18 @@ export type command = {
    readonly ignoreLogs?: boolean;
 }
 
-export default class Cmd {
+export default class Command {
    private readonly cmd: string;
    private readonly cmdParams: string;
    private readonly cmdConfigurableValues: Array<string>;
    private readonly ignoreLogs: boolean;
 
 
-   constructor(cmd: command) {
-      this.cmd = cmd.cmd;
-      this.cmdParams = cmd.cmdParams ?? "";
-      this.cmdConfigurableValues = cmd.cmdConfigurableValues ?? [];
-      this.ignoreLogs = !!cmd.ignoreLogs;
+   constructor(command: command) {
+      this.cmd = command.cmd;
+      this.cmdParams = command.cmdParams ?? "";
+      this.cmdConfigurableValues = command.cmdConfigurableValues ?? [];
+      this.ignoreLogs = !!command.ignoreLogs;
    }
 
 
@@ -43,5 +43,15 @@ export default class Cmd {
       else spawn(this.cmd, [...params], {
          stdio: this.ignoreLogs ? "ignore" : "inherit"
       });
+   }
+
+
+   GetDataToSave(): command {
+      return {
+         cmd: this.cmd,
+         cmdConfigurableValues: this.cmdConfigurableValues.length > 1 ? this.cmdConfigurableValues : undefined,
+         cmdParams: this.cmdParams,
+         ignoreLogs: this.ignoreLogs
+      }
    }
 }
