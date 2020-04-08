@@ -108,7 +108,7 @@ export default class CommandsSections {
 
    public Show(): void {
       console.log();
-      console.log(this.header);
+      if (!!this.header) console.log(this.header);
 
       console.log();
       if (!!this.currentDirPath) {
@@ -240,7 +240,7 @@ export default class CommandsSections {
 
    private DeleteCommand(): boolean {
       const commandToDelete = readlineSync.question(" Command to delete : ");
-      const commandExists = !!this.sections[commandToDelete];
+      const commandExists = !!this.commands[commandToDelete];
 
       if (!commandExists) {
          console.log(` No command with name ${commandToDelete} \n`);

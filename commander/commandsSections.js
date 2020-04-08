@@ -196,7 +196,7 @@ class CommandsSections {
     }
     DeleteCommand() {
         const commandToDelete = readline_sync_1.default.question(" Command to delete : ");
-        const commandExists = !!this.sections[commandToDelete];
+        const commandExists = !!this.commands[commandToDelete];
         if (!commandExists) {
             console.log(` No command with name ${commandToDelete} \n`);
             return false;
