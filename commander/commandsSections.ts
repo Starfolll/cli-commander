@@ -13,6 +13,7 @@ export type commandsSections = {
    commands?: { [name: string]: commandsGroup };
    header?: string;
    currentDirPath?: string;
+   showHelp?: boolean;
    startCommand?: Function;
    saveFunction?: Function;
 }
@@ -26,6 +27,7 @@ export default class CommandsSections {
 
    public readonly header?: string;
    public readonly currentDirPath: string;
+   public showHelp?: boolean;
 
    public readonly startCommand?: Function;
    public readonly saveFunction?: Function;
@@ -36,6 +38,7 @@ export default class CommandsSections {
       this.deep = commandsSections.deep ?? 1;
       this.header = commandsSections.header ?? "";
       this.currentDirPath = commandsSections.currentDirPath ?? "";
+      this.showHelp = commandsSections.showHelp ?? true;
 
       this.startCommand = commandsSections.startCommand;
       this.saveFunction = commandsSections.saveFunction ??
@@ -76,6 +79,11 @@ export default class CommandsSections {
          deep: this.deep,
          name: "q",
          actionDescription: "quit section / app"
+      });
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
+         name: "h",
+         actionDescription: "show/hide default commands"
       });
       CommandsGroup.ShowCommand({
          deep: this.deep,
@@ -120,7 +128,7 @@ export default class CommandsSections {
       console.log();
       this.ShowTitle();
 
-      if (this.deep === 1) {
+      if (this.deep === 1 && this.showHelp) {
          console.log();
          this.ShowDefaultCommands();
       }
@@ -271,6 +279,11 @@ export default class CommandsSections {
          } else if (input === "c") {
             displaySection();
             continue;
+         } else if (input === "h" && this.deep === 1) {
+            this.showHelp = !this.showHelp;
+            if (!!this.saveFunction) this.saveFunction();
+            displaySection();
+            continue;
          } else if (input === "--") {
             this.ExecCustomCommand();
             continue;
@@ -308,6 +321,7 @@ export default class CommandsSections {
          name: this.name,
          header: this.header,
          currentDirPath: this.deep === 1 ? this.currentDirPath : undefined,
+         showHelp: this.showHelp,
          sections: sectionsData,
          commands: commandsData,
       }

@@ -10,13 +10,14 @@ const chalk_1 = __importDefault(require("chalk"));
 const commander_1 = require("../commander");
 class CommandsSections {
     constructor(commandsSections) {
-        var _a, _b, _c, _d;
+        var _a, _b, _c, _d, _e;
         this.name = commandsSections.name;
         this.deep = (_a = commandsSections.deep, (_a !== null && _a !== void 0 ? _a : 1));
         this.header = (_b = commandsSections.header, (_b !== null && _b !== void 0 ? _b : ""));
         this.currentDirPath = (_c = commandsSections.currentDirPath, (_c !== null && _c !== void 0 ? _c : ""));
+        this.showHelp = (_d = commandsSections.showHelp, (_d !== null && _d !== void 0 ? _d : true));
         this.startCommand = commandsSections.startCommand;
-        this.saveFunction = (_d = commandsSections.saveFunction, (_d !== null && _d !== void 0 ? _d : (() => commander_1.saveCommandsFile(this.GetDataToSave()))));
+        this.saveFunction = (_e = commandsSections.saveFunction, (_e !== null && _e !== void 0 ? _e : (() => commander_1.saveCommandsFile(this.GetDataToSave()))));
         this.sections = {};
         if (!!commandsSections.sections)
             for (const section in commandsSections.sections)
@@ -42,6 +43,11 @@ class CommandsSections {
             deep: this.deep,
             name: "q",
             actionDescription: "quit section / app"
+        });
+        commandsGroup_1.default.ShowCommand({
+            deep: this.deep,
+            name: "h",
+            actionDescription: "show/hide default commands"
         });
         commandsGroup_1.default.ShowCommand({
             deep: this.deep,
@@ -72,7 +78,8 @@ class CommandsSections {
     }
     Show() {
         console.log();
-        console.log(this.header);
+        if (!!this.header)
+            console.log(this.header);
         console.log();
         if (!!this.currentDirPath) {
             console.log(` dir : ${this.currentDirPath}`);
@@ -83,7 +90,7 @@ class CommandsSections {
             this.startCommand();
         console.log();
         this.ShowTitle();
-        if (this.deep === 1) {
+        if (this.deep === 1 && this.showHelp) {
             console.log();
             this.ShowDefaultCommands();
         }
@@ -226,6 +233,13 @@ class CommandsSections {
                 displaySection();
                 continue;
             }
+            else if (input === "h" && this.deep === 1) {
+                this.showHelp = !this.showHelp;
+                if (!!this.saveFunction)
+                    this.saveFunction();
+                displaySection();
+                continue;
+            }
             else if (input === "--") {
                 this.ExecCustomCommand();
                 continue;
@@ -267,6 +281,7 @@ class CommandsSections {
             name: this.name,
             header: this.header,
             currentDirPath: this.deep === 1 ? this.currentDirPath : undefined,
+            showHelp: this.showHelp,
             sections: sectionsData,
             commands: commandsData,
         };

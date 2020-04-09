@@ -1,12 +1,13 @@
 {
   "name": "cli-commander",
-  "version": "0.1.0",
-  "description": "Module to declare and run commands",
+  "version": "0.1.2",
+  "description": "Package to declare and run commands",
   "main": "commander.js",
   "scripts": {
     "start": "node commander.js"
   },
   "bin": "./bin/cli-commander",
+  "homepage": "https://github.com/Starfolll/cli-commander",
   "_requiredBy": [
     "#USER",
     "/"
@@ -14,16 +15,15 @@
   "engines": {
     "node": ">=4.2.0"
   },
-  "author": "Starfolll",
+  "author": "Starfolll (Andery Kovyarov)",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^13.11.0",
-    "@types/readline-sync": "^1.4.3"
+    "@types/readline-sync": "^1.4.3",
+    "typescript": "^3.8.3"
   },
   "dependencies": {
     "chalk": "^4.0.0",
-    "readline-sync": "^1.4.10",
-    "tsc": "^1.20150623.0",
-    "typescript": "^3.8.3"
+    "readline-sync": "^1.4.10"
   }
 }

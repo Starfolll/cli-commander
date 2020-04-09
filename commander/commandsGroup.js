@@ -15,7 +15,8 @@ class CommandsGroup {
         this.printGap = (_c = command.printGap, (_c !== null && _c !== void 0 ? _c : false));
     }
     static ShowCommand(params) {
-        console.log(` ${"I".repeat(params.deep - 1)} ${(chalk_1.default.greenBright(params.name)).padEnd(60 - params.deep * 2)} ${!!params.actionDescription ? " | " : ""} ${chalk_1.default(params.actionDescription)}`);
+        const deep = params.deep - 1 < 0 ? 0 : params.deep;
+        console.log(` ${("I".repeat(deep) + " " + chalk_1.default.greenBright(params.name)).padEnd(60)} ${!!params.actionDescription ? " | " : ""} ${chalk_1.default(params.actionDescription)}`);
     }
     Show() {
         CommandsGroup.ShowCommand({

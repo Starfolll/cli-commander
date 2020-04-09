@@ -32,7 +32,8 @@ export default class CommandsGroup {
 
 
    public static ShowCommand(params: { deep: number, actionDescription: string, name: string }): void {
-      console.log(` ${"I".repeat(params.deep - 1)} ${(chalk.greenBright(params.name)).padEnd(60 - params.deep * 2)} ${!!params.actionDescription ? " | " : ""} ${chalk(params.actionDescription)}`);
+      const deep = params.deep - 1 < 0 ? 0 : params.deep;
+      console.log(` ${("I".repeat(deep) + " " + chalk.greenBright(params.name)).padEnd(60)} ${!!params.actionDescription ? " | " : ""} ${chalk(params.actionDescription)}`);
    }
 
 
