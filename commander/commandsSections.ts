@@ -231,7 +231,7 @@ export default class CommandsSections {
                cmd,
                cmdParams: !!cmdParams ? cmdParams : undefined,
                cmdConfigurableValues: cmdConfigurableValues.some(s => !!s) ? cmdConfigurableValues : undefined,
-               ignoreLogs: ignoreLogs ? ignoreLogs : undefined
+               ignoreLogs: ignoreLogs ? ignoreLogs : undefined,
             });
          }
 

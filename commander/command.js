@@ -8,33 +8,43 @@ const chalk_1 = __importDefault(require("chalk"));
 const child_process_1 = require("child_process");
 class Command {
     constructor(command) {
-        var _a, _b;
         this.cmd = command.cmd;
-        this.cmdParams = (_a = command.cmdParams, (_a !== null && _a !== void 0 ? _a : ""));
-        this.cmdConfigurableValues = (_b = command.cmdConfigurableValues, (_b !== null && _b !== void 0 ? _b : []));
+        this.cmdParams = command.cmdParams;
+        this.cmdConfigurableValues = command.cmdConfigurableValues;
         this.ignoreLogs = !!command.ignoreLogs;
+        this.dir = command.dir;
     }
     Spawn() {
-        let params = this.cmdParams.split(" ");
-        for (const confName of this.cmdConfigurableValues) {
-            const replacer = (readline_sync_1.default.question(`> Input ${chalk_1.default.blueBright(confName)} > `)).split(" ").join("_");
-            params = params.map(i => confName === i ? replacer : i);
-        }
-        console.log(`> ${this.cmd} ${[...params].join(" ")}`);
+        let params = this.cmdParams ? this.cmdParams.split(" ") : undefined;
+        if (!!params && !!this.cmdConfigurableValues)
+            for (const confName of this.cmdConfigurableValues) {
+                const replacer = (readline_sync_1.default.question(`> Input ${chalk_1.default.blueBright(confName)} > `)).split(" ").join("_");
+                params = params.map(i => confName === i ? replacer : i);
+            }
+        console.log(`> ${this.cmd} ${!!params ? [...params].join(" ") : ""}`);
         console.log();
+        const execDir = `${process.cwd()}/`;
         if (!this.ignoreLogs)
-            child_process_1.spawnSync(this.cmd, [...params], {
-                stdio: this.ignoreLogs ? "ignore" : "inherit"
-            });
+            try {
+                child_process_1.execSync(`${this.cmd} ${!!params ? [...params].join(" ") : ""}`, {
+                    stdio: this.ignoreLogs ? "ignore" : "inherit",
+                });
+            }
+            catch (e) {
+                console.log(chalk_1.default.redBright(" Error !"));
+            }
         else
-            child_process_1.spawn(this.cmd, [...params], {
-                stdio: this.ignoreLogs ? "ignore" : "inherit"
-            });
+            try {
+                child_process_1.exec(`${this.cmd} ${!!params ? [...params].join(" ") : ""}`, { cwd: execDir });
+            }
+            catch (e) {
+                console.log(chalk_1.default.redBright(" Error !"));
+            }
     }
     GetDataToSave() {
         return {
             cmd: this.cmd,
-            cmdConfigurableValues: this.cmdConfigurableValues.length > 1 ? this.cmdConfigurableValues : undefined,
+            cmdConfigurableValues: this.cmdConfigurableValues,
             cmdParams: this.cmdParams,
             ignoreLogs: this.ignoreLogs
         };

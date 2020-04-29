@@ -12,12 +12,12 @@ class CommandsSections {
     constructor(commandsSections) {
         var _a, _b, _c, _d, _e;
         this.name = commandsSections.name;
-        this.deep = (_a = commandsSections.deep, (_a !== null && _a !== void 0 ? _a : 1));
-        this.header = (_b = commandsSections.header, (_b !== null && _b !== void 0 ? _b : ""));
-        this.currentDirPath = (_c = commandsSections.currentDirPath, (_c !== null && _c !== void 0 ? _c : ""));
-        this.showHelp = (_d = commandsSections.showHelp, (_d !== null && _d !== void 0 ? _d : true));
+        this.deep = (_a = commandsSections.deep) !== null && _a !== void 0 ? _a : 1;
+        this.header = (_b = commandsSections.header) !== null && _b !== void 0 ? _b : "";
+        this.currentDirPath = (_c = commandsSections.currentDirPath) !== null && _c !== void 0 ? _c : "";
+        this.showHelp = (_d = commandsSections.showHelp) !== null && _d !== void 0 ? _d : true;
         this.startCommand = commandsSections.startCommand;
-        this.saveFunction = (_e = commandsSections.saveFunction, (_e !== null && _e !== void 0 ? _e : (() => commander_1.saveCommandsFile(this.GetDataToSave()))));
+        this.saveFunction = (_e = commandsSections.saveFunction) !== null && _e !== void 0 ? _e : (() => commander_1.saveCommandsFile(this.GetDataToSave()));
         this.sections = {};
         if (!!commandsSections.sections)
             for (const section in commandsSections.sections)
@@ -188,12 +188,12 @@ class CommandsSections {
                     cmd,
                     cmdParams: !!cmdParams ? cmdParams : undefined,
                     cmdConfigurableValues: cmdConfigurableValues.some(s => !!s) ? cmdConfigurableValues : undefined,
-                    ignoreLogs: ignoreLogs ? ignoreLogs : undefined
+                    ignoreLogs: ignoreLogs ? ignoreLogs : undefined,
                 });
             }
             this.commands["-" + newCommandName] = new commandsGroup_1.default({
                 name: newCommandName,
-                actionDescription: (commandDescription !== null && commandDescription !== void 0 ? commandDescription : undefined),
+                actionDescription: commandDescription !== null && commandDescription !== void 0 ? commandDescription : undefined,
                 cmd: commands,
                 deep: this.deep + 1
             });

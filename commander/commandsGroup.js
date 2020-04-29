@@ -9,10 +9,10 @@ class CommandsGroup {
     constructor(command) {
         var _a, _b, _c;
         this.name = command.name;
-        this.actionDescription = (_a = command.actionDescription, (_a !== null && _a !== void 0 ? _a : ""));
+        this.actionDescription = (_a = command.actionDescription) !== null && _a !== void 0 ? _a : "";
         this.cmd = command.cmd.map(c => new command_1.default(c));
-        this.deep = (_b = command.deep, (_b !== null && _b !== void 0 ? _b : 1));
-        this.printGap = (_c = command.printGap, (_c !== null && _c !== void 0 ? _c : false));
+        this.deep = (_b = command.deep) !== null && _b !== void 0 ? _b : 1;
+        this.printGap = (_c = command.printGap) !== null && _c !== void 0 ? _c : false;
     }
     static ShowCommand(params) {
         const deep = params.deep - 1 < 0 ? 0 : params.deep;
