@@ -1,1 +1,1 @@
-Package for grouping command line commands.
+Package for grouping command line commands
