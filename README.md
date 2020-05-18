@@ -6,6 +6,8 @@ Cli-commander is a package for grouping command line commands.
 
 hello world
 
+hello world
+
 ### Installing
 
 * install node with npm
