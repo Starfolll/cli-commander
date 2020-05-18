@@ -14,4 +14,4 @@ Cli-commander is a package for grouping command line commands.
 ## Co-authors
 
 * **Danyil-Mykola** - [danyaobertan](https://github.com/danyaobertan)
-
+* **Dmitry** - [danyaobertan](https://github.com/daboorlie)
