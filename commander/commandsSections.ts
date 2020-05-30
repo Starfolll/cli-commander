@@ -82,6 +82,11 @@ export default class CommandsSections {
       });
       CommandsGroup.ShowCommand({
          deep: this.deep,
+         name: "s",
+         actionDescription: "save file"
+      });
+      CommandsGroup.ShowCommand({
+         deep: this.deep,
          name: "h",
          actionDescription: "show/hide default commands"
       });
@@ -128,9 +133,10 @@ export default class CommandsSections {
       console.log();
       this.ShowTitle();
 
-      if (this.deep === 1 && this.showHelp) {
+      if (this.showHelp) {
          console.log();
          this.ShowDefaultCommands();
+         console.log(" I".padEnd(53, "-") + "|");
       }
 
       if (Object.keys(this.sections).length > 0) console.log();
@@ -185,7 +191,6 @@ export default class CommandsSections {
             startCommand: this.startCommand,
             saveFunction: this.saveFunction
          });
-         this.saveFunction!();
 
          return true;
       }
@@ -200,7 +205,6 @@ export default class CommandsSections {
          return false;
       } else if (isReplyPositive(readlineSync.question(` Are you sure you want to delete ${sectionToDelete} section? \n [yes/no] : `))) {
          delete this.sections[sectionToDelete];
-         this.saveFunction!();
          return true;
       }
       return false;
@@ -241,7 +245,6 @@ export default class CommandsSections {
             cmd: commands,
             deep: this.deep + 1
          });
-         this.saveFunction!();
          return true;
       }
    }
@@ -255,7 +258,6 @@ export default class CommandsSections {
          return false;
       } else if (isReplyPositive(readlineSync.question(` Are you sure you want to delete ${commandToDelete} command? \n [yes/no] : `))) {
          delete this.commands[commandToDelete];
-         this.saveFunction!();
          return true;
       }
       return false;
@@ -279,9 +281,12 @@ export default class CommandsSections {
          } else if (input === "c") {
             displaySection();
             continue;
+         } else if (input === "s") {
+            this.saveFunction!();
+            displaySection();
+            continue;
          } else if (input === "h" && this.deep === 1) {
             this.showHelp = !this.showHelp;
-            if (!!this.saveFunction) this.saveFunction();
             displaySection();
             continue;
          } else if (input === "--") {

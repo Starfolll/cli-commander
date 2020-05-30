@@ -47,8 +47,7 @@ export default class CommandsGroup {
    }
 
    public Execute(): void {
-      for (let i = 0; i < this.cmd.length; i++)
-         this.cmd[i].Spawn();
+      for (let i = 0; i < this.cmd.length; i++) this.cmd[i].Spawn();
    }
 
 

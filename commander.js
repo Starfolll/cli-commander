@@ -8,27 +8,27 @@ const commandsSetupFile_1 = __importDefault(require("./commander/commandsSetupFi
 const readline_sync_1 = __importDefault(require("readline-sync"));
 const chalk_1 = __importDefault(require("chalk"));
 const fs_1 = __importDefault(require("fs"));
+const yaml_1 = __importDefault(require("yaml"));
 const initDir = process.cwd();
-const commandsFileDir = initDir + "/commands.js";
+const commandsFileDir = initDir + "/commands.yml";
 exports.isReplyPositive = (reply) => ["yes", "ye", "y"].some(s => reply.toLowerCase() === s);
 exports.createCommanderFile = () => {
     fs_1.default.writeFileSync(commandsFileDir, commandsSetupFile_1.default(readline_sync_1.default.question(" Project name : ")));
     console.log(" Commands file created!");
 };
 exports.saveCommandsFile = (commandsSections) => {
-    fs_1.default.writeFileSync(initDir + "/commands.js", `module.exports = ${JSON.stringify(commandsSections, null, 3)};`);
+    fs_1.default.writeFileSync(commandsFileDir, yaml_1.default.stringify(commandsSections));
 };
 if (fs_1.default.existsSync(commandsFileDir)) {
-    const commands = require(commandsFileDir);
-    const commandsSections = new commandsSections_1.default(commands);
+    const commandsSections = new commandsSections_1.default(yaml_1.default.parse(fs_1.default.readFileSync(commandsFileDir).toString()));
     commandsSections.Enter(() => {
+        exports.saveCommandsFile(commandsSections.GetDataToSave());
         console.clear();
-        console.log(" bye ");
     });
 }
 else {
     console.log();
-    console.log(chalk_1.default.redBright(` ${commandsFileDir} file not found!`));
+    console.log(chalk_1.default.redBright(` ${commandsFileDir} file is not found!`));
     console.log();
     const createCommandsFileReply = readline_sync_1.default.question(` Do u want create commands file in ${chalk_1.default.blueBright(initDir)}? \n [yes/no] : `);
     if (exports.isReplyPositive(createCommandsFileReply))
