@@ -98,7 +98,7 @@ class CommandsSections {
         if (this.showHelp) {
             console.log();
             this.ShowDefaultCommands();
-            console.log(" |".padEnd(53, "-") + "|");
+            console.log(" I".padEnd(53, "-") + "|");
         }
         if (Object.keys(this.sections).length > 0)
             console.log();
