@@ -1,6 +1,6 @@
 {
   "name": "cli-commander",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Package to declare and run commands",
   "main": "commander.js",
   "scripts": {
@@ -23,7 +23,9 @@
     "typescript": "^3.8.3"
   },
   "dependencies": {
+    "@types/yaml": "^1.9.7",
     "chalk": "^4.0.0",
-    "readline-sync": "^1.4.10"
+    "readline-sync": "^1.4.10",
+    "yaml": "^1.10.0"
   }
 }
